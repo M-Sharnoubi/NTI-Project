@@ -1,0 +1,9 @@
+numpy
+pandas
+scikit-learn
+tensorflow
+torch
+transformers
+huggingface_hub
+regex
+rapidfuzz
