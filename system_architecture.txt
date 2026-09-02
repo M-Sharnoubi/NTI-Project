@@ -3,51 +3,51 @@
 ===================================================================================
 
 [ USER INPUT ] (نص العميل باللغة العربية عبر الشات)
-            │
+      │
       ▼
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│ 1. ARABIC NLP LAYER (Person 1)                                                                          │
-│    - Tool: Hugging Face (ArabBERT / MARBERT) or LLM Zero-Shot Prompt                                    │
-│    - Output: JSON -> { intent, sentiment, priority, entities }                                          │
+│ 1. ARABIC NLP LAYER (Person 1)                                                  │
+│    - Tool: Hugging Face (ArabBERT / MARBERT) or LLM Zero-Shot Prompt            │
+│    - Output: JSON -> { intent, sentiment, priority, entities }                  │
 └─────────────────────────────────────────────────────────────────────────────────┘
       │
       ▼
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│ 2. DYNAMIC ROUTER (Person 3)                                                                            │
-│    - Logic: Custom Python Router (If / Else based on NLP JSON)                                          │
+│ 2. DYNAMIC ROUTER (Person 3)                                                    │
+│    - Logic: Custom Python Router (If / Else based on NLP JSON)                  │
 └─────────────────────────────────────────────────────────────────────────────────┘
       │
       ├───────────────────────────────┼───────────────────────────────┐
-      ▼                                        ▼                               ▼
-[ SIMPLE ROUTE ]                          [ RAG ROUTE ]                   [ AGENT ROUTE ]
-(إجابة مباشرة)                                  (أسئلة استفسارية)                                                          (إجراء عمليات)
-            │                                         │                               │
-      │                                     (Person 2)                      (Person 2)
-      │                               LangChain RetrievalQA           LangChain initialize_agent
-      │                               + VectorDB (ChromaDB)           + Custom Tools (Python)
-      │                                        │                               │
+      ▼                               ▼                               ▼
+[ SIMPLE ROUTE ]               [ RAG ROUTE ]                   [ AGENT ROUTE ]
+(إجابة مباشرة)                      (أسئلة استفسارية)                      (إجراء عمليات)
+      │                               │                               │
+      │                        (Person 2)                      (Person 2)
+      │                        LangChain RetrievalQA           LangChain initialize_agent
+      │                        + VectorDB (ChromaDB)           + Custom Tools (Python)
+      │                               │                               │
       └───────────────────────────────┼───────────────────────────────┘
-                                               │
-                                               ▼
+                                      │
+                                      ▼
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│ 3. RESOLUTION CHECK (Person 2)                                                                          │
-│    - Logic: Prompt-based evaluation (Is the user query fully resolved?)                                 │
+│ 3. RESOLUTION CHECK (Person 2)                                                  │
+│    - Logic: Prompt-based evaluation (Is the user query fully resolved?)         │
 └─────────────────────────────────────────────────────────────────────────────────┘
-                                           │
+                                      │
                    ┌──────────────────┴──────────────────┐
-                   ▼                                                ▼
-             [ STATUS: SOLVED ]                            [ STATUS: UNSOLVED ]
-                   │                                                │
-                   ▼                                               ▼
+                   ▼                                     ▼
+             [ STATUS: SOLVED ]                  [ STATUS: UNSOLVED ]
+                   │                                     │
+                   ▼                                     ▼
         [ Return Final Answer ]               ┌──────────────────────────────────┐
-             (To User UI)                     │ 4. ESCALATION ENGINE (Person 3)            │
-                                              │    - LangChain SummarizeChain              │
-                                              │    - Create Support Ticket                 │
+             (To User UI)                     │ 4. ESCALATION ENGINE (Person 3)  │
+                                              │    - LangChain SummarizeChain    │
+                                              │    - Create Support Ticket       │
                                               └──────────────────────────────────┘
                                                          │
                                                          ▼
                                               ┌──────────────────────────────────┐
-                                              │ 5. UI & ADMIN DASHBOARD (Person 4)         │
-                                              │    - Streamlit Human Dashboard             │
-                                              │    - Send Email Notification               │
+                                              │5. UI & ADMIN DASHBOARD (Person 4)│
+                                              │    - Streamlit Human Dashboard   │
+                                              │    - Send Email Notification     │
                                               └──────────────────────────────────┘
