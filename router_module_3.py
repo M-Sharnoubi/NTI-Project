@@ -1,17 +1,31 @@
+"""
+Dynamic Router Orchestrator.
+
+This module acts as the central execution hub for the customer support system.
+It inspects NLP intent classifications and dynamically routes queries to:
+  1. Simple Route: Direct static responses for greetings, thanks, and goodbyes.
+  2. RAG Route: Knowledge base retrieval via vector search (rag_agent_module_2).
+  3. Agent Route: Tool-assisted actions like order tracking and cancellations.
+  4. Escalation Route: Ticket generation for complaints and unresolved queries.
+"""
+
 import logging
 from typing import Dict, Any, List, Optional
 
 # Import Escalation Logic from escalation package
 from escalation.ticket_manager import create_support_ticket
 
-# Import Pipelines from Person 2's module
+# Import Person 1's NLP module function from inference.py
+from inference import analyze_customer_message
+
+# Import Person 2's RAG & Agent pipelines from rag_agent_module_2.py
 from rag_agent_module_2 import (
     run_rag_pipeline,
     run_agent_pipeline,
     check_resolution
 )
 
-# Configure system logger
+# Configure logger for system tracing
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
@@ -22,10 +36,24 @@ def route_request(
     chat_history: Optional[List[Dict[str, str]]] = None
 ) -> Dict[str, Any]:
     """
-    Main Dynamic Router orchestrating intent execution across simple, RAG, agent, and escalation flows.
+    Orchestrates user requests across simple, RAG, agent, and escalation routes.
+
+    Args:
+        user_input (str): Raw customer text input.
+        nlp_output (Dict[str, Any], optional): Classified intent and entities. Auto-invokes NLP if None.
+        thread_id (str): Unique session identifier for conversation persistence.
+        chat_history (List[Dict[str, str]], optional): List of prior chat turns.
+
+    Returns:
+        Dict[str, Any]: Unified payload containing the final answer, route used, status, and ticket details.
     """
+    # Automatically execute Person 1's NLP module if nlp_output is not provided
     if nlp_output is None:
-        nlp_output = {}
+        try:
+            nlp_output = analyze_customer_message(user_input)
+        except Exception as err:
+            logging.error(f"NLP execution failed in inference.py: {err}")
+            nlp_output = {"intent": "general_inquiry", "entities": {}}
 
     intent = nlp_output.get("intent", "general_inquiry")
     entities = nlp_output.get("entities", {})
@@ -39,7 +67,7 @@ def route_request(
     }
 
     try:
-        # Route 1: Simple Route (Greetings, Thanks, Goodbyes)
+        # Route 1: Simple Route (Static responses without LLM/RAG overhead)
         if intent in ["greeting", "thanks", "goodbye"]:
             payload["route_used"] = "SIMPLE_ROUTE"
             payload["status"] = "SOLVED"
@@ -58,12 +86,12 @@ def route_request(
             payload["route_used"] = "RAG_ROUTE"
             payload["final_answer"] = run_rag_pipeline(user_query=user_input, chat_history=chat_history)
 
-        # Route 3: Agent Route (Order Actions via Tools)
+        # Route 3: Agent Route (Executing tool actions like tracking or canceling orders)
         elif intent in ["track_order", "cancel_order"]:
             payload["route_used"] = "AGENT_ROUTE"
             payload["final_answer"] = run_agent_pipeline(user_query=user_input, thread_id=thread_id)
 
-        # Route 4: Escalation Route (Direct Complaints)
+        # Route 4: Escalation Route (Direct human agent escalation)
         elif intent == "complaint":
             payload["route_used"] = "ESCALATION_ROUTE"
             payload["status"] = "UNSOLVED"
@@ -93,7 +121,7 @@ def route_request(
         )
         payload["status"] = resolution_status
 
-        # If unresolved, generate summary and support ticket
+        # Automatic ticket creation if issue remains UNSOLVED
         if resolution_status == "UNSOLVED":
             history_str = f"العميل: {user_input}\nالبوت: {payload['final_answer']}"
             ticket_res = create_support_ticket(
@@ -121,16 +149,22 @@ def route_request(
     return payload
 
 
-# Local Testing Block
+# Local execution test block
 if __name__ == "__main__":
     print("=" * 60)
-    print("Testing Integrated Dynamic Router")
+    print("Testing Integrated Dynamic Router Module")
     print("=" * 60)
 
     # Test Case 1: Simple Greeting
     res_1 = route_request("السلام عليكم", nlp_output={"intent": "greeting"})
-    print("\nTest 1 (Greeting):", res_1)
+    print("\n[Test 1 Output - Simple Route]:")
+    print(res_1)
 
-    # Test Case 2: Agent Action
-    res_2 = route_request("عايز أعرف شحنة 1001 فين؟", nlp_output={"intent": "track_order", "entities": {"order_id": "1001"}})
-    print("\nTest 2 (Track Order):", res_2)
+    # Test Case 2: Agent Order Tracking
+    res_2 = route_request(
+        "عايز أعرف شحنة 1001 فين؟", 
+        nlp_output={"intent": "track_order", "entities": {"order_id": "1001"}},
+        thread_id="test_session_1"
+    )
+    print("\n[Test 2 Output - Agent Route]:")
+    print(res_2)
