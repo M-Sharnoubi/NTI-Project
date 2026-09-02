@@ -47,7 +47,7 @@ def summarize_conversation(conversation_text: str) -> SummaryResult:
 
 
 if __name__ == "__main__":
-    # quick manual test — run: python -m summarization.summarizer
+    # quick manual test
     sample = (
         "العميل: عايز ألغي طلب رقم 12345\n"
         "البوت: للأسف مش قادر أتحقق من أهلية الاسترجاع للطلب ده.\n"
