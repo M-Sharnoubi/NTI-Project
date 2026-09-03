@@ -30,20 +30,8 @@ from sklearn.metrics import (
 from transformers import AutoTokenizer, AutoModel
 
 
-"""# preprocessing"""
 
 def preprocess_text(text: str) -> str:
-    """
-    Light semantics-preserving preprocessing.
-
-    We intentionally do NOT:
-      - stemming
-      - stop-word removal
-      - root extraction
-      - aggressive Arabic normalization
-      - aggressive punctuation removal
-      - removal of #order_id
-    """
 
     if text is None:
         return ""
