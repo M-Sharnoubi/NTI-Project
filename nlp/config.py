@@ -2,6 +2,7 @@
 Configuration, label mappings, and reproducibility/device setup
 for the Arabic customer-service multi-task MARBERT project.
 """
+from pathlib import Path
 
 import random
 
@@ -14,10 +15,10 @@ import torch
 # 1. CONFIGURATION
 # ============================================================
 
-DATASET_PATH = "dataset.csv"
+DATASET_PATH = Path(__file__).resolve().parent / "dataset.csv"
 
 MODEL_NAME = "UBC-NLP/MARBERT"
-CHECKPOINT_DIR = "marbert_multitask_checkpoint"
+CHECKPOINT_DIR = Path(__file__).resolve().parent / "marbert_multitask_checkpoint"
 
 SEED = 42
 
