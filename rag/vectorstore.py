@@ -1,3 +1,4 @@
+from pathlib import Path
 from langchain_chroma import Chroma
 from langchain_community.document_loaders import TextLoader
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -15,10 +16,10 @@ embeddings = HuggingFaceEmbeddings(
 # LOAD COMPANY POLICY
 # ============================================================
 
-loader = TextLoader(
-    "company_policies.txt",
-    encoding="utf-8"
-)
+BASE_DIR = Path(__file__).resolve().parent.parent  # Points to project root (NTI-Project)
+FILE_PATH = BASE_DIR / "company_policies.txt"  # Adjust file name/path relative to root
+
+loader = TextLoader(str(FILE_PATH), encoding="utf-8")
 
 documents = loader.load()
 
