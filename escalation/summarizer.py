@@ -4,7 +4,7 @@ from langchain_classic.chains.summarize import load_summarize_chain
 from langchain_classic.docstore.document import Document
 from langchain_classic.prompts import PromptTemplate
 from langchain_groq import ChatGroq
-
+from shared.llm import llm
 from schemas.contracts import SummaryResult
 
 load_dotenv()
@@ -23,20 +23,11 @@ SUMMARY_PROMPT = PromptTemplate(
 )
 
 
-def get_llm():
-    return ChatGroq(
-        model="openai/gpt-oss-120b",
-        temperature=0,
-        api_key=os.environ.get("GROQ_API_KEY"),
-    )
-
-
 def summarize_conversation(conversation_text: str) -> SummaryResult:
     """
     conversation_text: full text of the conversation (customer + bot turns) that ended unresolved.
     Returns a SummaryResult matching the shared contract.
     """
-    llm = get_llm()
     chain = load_summarize_chain(llm, chain_type="stuff", prompt=SUMMARY_PROMPT)
 
     doc = Document(page_content=conversation_text)
