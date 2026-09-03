@@ -7,3 +7,7 @@ transformers
 huggingface_hub
 regex
 rapidfuzz
+python-dotenv
+pandas
+scikit-learn
+tensorflow-cpu
