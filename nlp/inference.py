@@ -77,15 +77,6 @@ def analyze_customer_message(
     config: Optional[Dict] = None,
 ) -> Dict:
 
-    """
-    Main reusable inference function.
-
-    Can later be called by:
-      - FastAPI
-      - Router
-      - Streamlit
-      - another Python application
-    """
 
     # Lazy-load model if caller didn't provide it.
     if (
