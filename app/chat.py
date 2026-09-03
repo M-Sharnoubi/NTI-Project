@@ -29,13 +29,13 @@ def render_chat():
     if "thread_id" not in st.session_state:
         st.session_state.thread_id = str(uuid.uuid4())
 
-    # Conversation starters for empty chat
+    # Professional empty state
     if not st.session_state.messages:
         st.markdown(
             """
-            <div style="text-align: center; padding: 2rem 0; color: #64748B;">
-                <h3>كيف يمكننا مساعدتك اليوم؟ 👋</h3>
-                <p>يمكنك الاستفسار عن حالة طلبك، استبدال المنتجات، أو الدعم الفني.</p>
+            <div class="welcome-container">
+                <div class="welcome-title">مرحباً بك في مركز الخدمة</div>
+                <div class="welcome-desc">يمكنك الاستفسار عن حالة الطلب، طلبات الاستبدال، أو الدعم الفني المباشر.</div>
             </div>
             """,
             unsafe_allow_html=True,
@@ -49,8 +49,7 @@ def render_chat():
                 st.markdown(
                     """
                     <div class="escalation-box">
-                        <span>⚠️</span>
-                        <span>تم تسجيل تذكرة وهيعاود الاتصال بك أحد ممثلي خدمة العملاء.</span>
+                        <span>تم تسجيل تذكرة وسيتم التواصل معك بواسطة أحد ممثلي خدمة العملاء.</span>
                     </div>
                     """,
                     unsafe_allow_html=True,
@@ -62,7 +61,7 @@ def render_chat():
         with st.chat_message("user"):
             st.write(user_input)
 
-        with st.spinner("جاري تحليل استفسارك والتواصل مع النظام..."):
+        with st.spinner("جاري التواصل مع النظام..."):
             result = run_pipeline(
                 user_input,
                 thread_id=st.session_state.thread_id,
@@ -76,8 +75,7 @@ def render_chat():
                 st.markdown(
                     """
                     <div class="escalation-box">
-                        <span>⚠️</span>
-                        <span>تم تسجيل تذكرة وهيعاود الاتصال بك أحد ممثلي خدمة العملاء.</span>
+                        <span>تم تسجيل تذكرة وسيتم التواصل معك بواسطة أحد ممثلي خدمة العملاء.</span>
                     </div>
                     """,
                     unsafe_allow_html=True,

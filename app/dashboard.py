@@ -13,7 +13,7 @@ def render_dashboard():
         tickets = get_all_tickets()
 
     if not tickets:
-        st.info("✨ لا توجد تذاكر مفتوحة حاليًا. جميع الطلبات معالجة!")
+        st.info("لا توجد تذاكر مفتوحة حالياً.")
         return
 
     # Metrics Summary Bar
@@ -52,15 +52,15 @@ def render_dashboard():
 
         st.markdown(
             f"""
-            <div class="ticket-card {priority}">
+            <div class="ticket-card">
                 <div>
-                    <span style="font-weight: 800; font-size: 1.1rem; color: var(--text-heading);">
-                        🎫 تذكرة #{t.get('ticket_id', '—')}
+                    <span style="font-weight: 600; font-size: 0.95rem; color: var(--text-heading);">
+                        تذكرة #{t.get('ticket_id', '—')}
                     </span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span class="priority-badge {priority}">{priority_ar}</span>
-                    <span style="color: var(--text-muted); font-size: 0.9rem;">
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">
                         الحالة: <b>{t.get('status', '—')}</b>
                     </span>
                 </div>
@@ -68,7 +68,7 @@ def render_dashboard():
             """,
             unsafe_allow_html=True,
         )
-        with st.expander("🔎 عرض تفاصيل التذكرة"):
+        with st.expander("تفاصيل التذكرة"):
             col1, col2 = st.columns(2)
             with col1:
                 st.write("**ملخص المشكلة:**", t.get("summary", "—"))

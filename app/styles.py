@@ -1,48 +1,48 @@
 """
-Shared design system for the Streamlit app — modern white + blue theme,
-RTL-native for Arabic.
-
-Import CUSTOM_CSS and inject once in main.py with st.markdown(..., unsafe_allow_html=True).
+Shared design system for the Streamlit app — Modern Minimal Light Theme.
+RTL-native for Arabic with clean hierarchy and subtle focus states.
 """
 
 CUSTOM_CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Tajawal:wght@400;500;700&display=swap');
 
 :root {
-    --brand-primary: #2563EB;
-    --brand-primary-hover: #1D4ED8;
-    --brand-dark: #0F172A;
-    --brand-gradient: linear-gradient(135deg, #2563EB 0%, #1E40AF 100%);
+    /* Neutral Light Palette */
     --bg-surface: #F8FAFC;
     --card-bg: #FFFFFF;
+    
+    /* Subtle Accent (Restrained Indigo) */
+    --accent-primary: #3B82F6;
+    --accent-light: #F0F6FF;
+    
+    /* Border & Separators */
     --border-subtle: #E2E8F0;
-    --border-accent: #BFDBFE;
+    --border-strong: #CBD5E1;
+    
+    /* Text Hierarchy (Dark Charcoal) */
     --text-heading: #0F172A;
     --text-body: #334155;
     --text-muted: #64748B;
     
-    /* Semantic Colors */
-    --danger: #EF4444;
+    /* Functional Colors */
+    --danger: #DC2626;
     --danger-soft: #FEF2F2;
-    --warning: #F59E0B;
+    --danger-border: #FECACA;
+    --warning: #D97706;
     --warning-soft: #FFFBEB;
-    --success: #10B981;
-    --success-soft: #ECFDF5;
-    --neutral: #64748B;
-    --neutral-soft: #F1F5F9;
+    --success: #16A34A;
+    --success-soft: #F0FDF4;
 
-    /* Shadows & Radii */
-    --radius-sm: 8px;
-    --radius-md: 12px;
-    --radius-lg: 16px;
-    --shadow-soft: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
-    --shadow-hover: 0 10px 25px -5px rgba(37, 99, 235, 0.1);
+    /* Elevation & Layout */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --shadow-subtle: 0 1px 3px 0 rgba(15, 23, 42, 0.04), 0 1px 2px -1px rgba(15, 23, 42, 0.02);
 }
 
-/* ---------- Base RTL & Typography ---------- */
+/* ---------- Global Reset & Typography ---------- */
 html, body, [class*="css"] {
-    font-family: 'Tajawal', sans-serif !important;
+    font-family: 'Tajawal', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
     color: var(--text-body);
 }
 
@@ -52,38 +52,9 @@ html, body, [class*="css"] {
 }
 
 .block-container {
-    max-width: 1000px;
-    padding-top: 1.5rem;
-    padding-bottom: 2rem;
-}
-
-/* Clean Header Section */
-.app-header {
-    background: var(--card-bg);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    padding: 1.5rem 2rem;
-    margin-bottom: 1.5rem;
-    box-shadow: var(--shadow-soft);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.app-title {
-    font-size: 1.75rem;
-    font-weight: 800;
-    color: var(--text-heading);
-    margin: 0;
-    background: var(--brand-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.app-subtitle {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    margin-top: 4px;
+    max-width: 900px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
 }
 
 /* Hide Streamlit Chrome */
@@ -91,81 +62,125 @@ section[data-testid="stSidebar"], #MainMenu, footer, header {
     visibility: hidden;
 }
 
-/* ---------- Tabs Styling ---------- */
-div[data-baseweb="tab-list"] {
-    background-color: #E2E8F0;
-    padding: 4px;
+/* ---------- App Header Bar ---------- */
+.app-header {
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    gap: 4px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-heading);
+}
+
+.app-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.status-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--success);
+    border-radius: 50%;
+}
+
+/* ---------- Clean Tabs Navigation ---------- */
+div[data-baseweb="tab-list"] {
+    background-color: transparent;
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 0;
+    gap: 1.5rem;
     margin-bottom: 1.5rem;
 }
 
 button[data-baseweb="tab"] {
     font-family: 'Tajawal', sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+    font-size: 0.9rem !important;
     color: var(--text-muted) !important;
-    border-radius: var(--radius-sm) !important;
-    padding: 8px 16px !important;
-    transition: all 0.2s ease !important;
+    border-radius: 0 !important;
+    padding: 8px 0 !important;
     border: none !important;
+    background: transparent !important;
+    border-bottom: 2px solid transparent !important;
 }
 
 button[data-baseweb="tab"][aria-selected="true"] {
-    background-color: var(--card-bg) !important;
-    color: var(--brand-primary) !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
+    color: var(--text-heading) !important;
+    border-bottom-color: var(--text-heading) !important;
 }
 
 div[data-baseweb="tab-highlight"] {
     display: none !important;
 }
 
-/* ---------- Chat Area Improvements ---------- */
+/* ---------- Chat Messages ---------- */
 div[data-testid="stChatMessage"] {
     background-color: var(--card-bg);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     padding: 1rem 1.25rem;
-    margin-bottom: 1rem;
-    box-shadow: var(--shadow-soft);
+    margin-bottom: 0.75rem;
+    box-shadow: var(--shadow-subtle);
     direction: rtl;
     text-align: right;
-    transition: transform 0.15s ease;
 }
 
+/* User Message Minimal Tint */
 div[data-testid="stChatMessage"]:has(div[data-testid="stChatMessageAvatarUser"]) {
-    background-color: #EFF6FF;
-    border-color: var(--border-accent);
+    background-color: var(--bg-surface);
+    border-color: var(--border-subtle);
 }
 
 div[data-testid="stChatMessage"] p {
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--text-heading);
+    font-size: 0.925rem;
+    line-height: 1.6;
+    color: var(--text-body);
 }
 
 /* Chat Input Bar */
-div[data-testid="stChatInput"] {
-    border-radius: var(--radius-md);
-}
-
 div[data-testid="stChatInput"] textarea {
+    background-color: var(--card-bg) !important;
     border: 1px solid var(--border-subtle) !important;
     border-radius: var(--radius-md) !important;
+    color: var(--text-heading) !important;
     direction: rtl;
     text-align: right;
     font-family: 'Tajawal', sans-serif !important;
-    font-size: 1rem !important;
+    font-size: 0.9rem !important;
     padding: 0.75rem 1rem !important;
+    box-shadow: var(--shadow-subtle) !important;
 }
 
 div[data-testid="stChatInput"]:focus-within textarea {
-    border-color: var(--brand-primary) !important;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+    border-color: var(--text-muted) !important;
 }
 
-/* ---------- Dashboard Metrics & Cards ---------- */
+/* ---------- Dashboard Component Styling ---------- */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -177,70 +192,99 @@ div[data-testid="stChatInput"]:focus-within textarea {
     background: var(--card-bg);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    padding: 1rem 1.25rem;
-    box-shadow: var(--shadow-soft);
+    padding: 1rem;
+    box-shadow: var(--shadow-subtle);
 }
 
 .metric-value {
-    font-size: 1.75rem;
-    font-weight: 800;
+    font-size: 1.5rem;
+    font-weight: 700;
     color: var(--text-heading);
+    line-height: 1.2;
 }
 
 .metric-label {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 4px;
 }
 
-/* Priority Cards */
+/* Ticket Items */
 .ticket-card {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 1.25rem;
-    margin-bottom: 0.75rem;
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 0.5rem;
     background-color: var(--card-bg);
     border: 1px solid var(--border-subtle);
-    border-right: 5px solid var(--neutral);
     border-radius: var(--radius-md);
-    box-shadow: var(--shadow-soft);
-    transition: all 0.2s ease;
+    box-shadow: var(--shadow-subtle);
 }
-
-.ticket-card:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
-}
-
-.ticket-card.high   { border-right-color: var(--danger); }
-.ticket-card.medium { border-right-color: var(--warning); }
-.ticket-card.low    { border-right-color: var(--neutral); }
 
 .priority-badge {
     display: inline-flex;
     align-items: center;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.8rem;
-    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
 }
 
-.priority-badge.high { background: var(--danger-soft); color: var(--danger); }
-.priority-badge.medium { background: var(--warning-soft); color: var(--warning); }
-.priority-badge.low { background: var(--neutral-soft); color: var(--neutral); }
+.priority-badge.high { 
+    background: var(--danger-soft); 
+    color: var(--danger); 
+    border: 1px solid var(--danger-border);
+}
 
-/* Escalation Warning Alert */
+.priority-badge.medium { 
+    background: var(--warning-soft); 
+    color: var(--warning); 
+    border: 1px solid #FDE68A;
+}
+
+.priority-badge.low { 
+    background: var(--bg-surface); 
+    color: var(--text-muted); 
+    border: 1px solid var(--border-subtle);
+}
+
+/* Escalation Warning Box */
 .escalation-box {
     background: var(--danger-soft);
-    border: 1px solid #FCA5A5;
-    border-radius: var(--radius-md);
+    border: 1px solid var(--danger-border);
+    border-radius: var(--radius-sm);
     padding: 0.75rem 1rem;
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
     color: var(--danger);
-    font-weight: 600;
+    font-size: 0.85rem;
     display: flex;
     align-items: center;
     gap: 8px;
+}
+
+/* Empty State */
+.welcome-container {
+    text-align: right;
+    padding: 2rem 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    margin: 1rem 0 1.5rem;
+    box-shadow: var(--shadow-subtle);
+}
+
+.welcome-title {
+    color: var(--text-heading);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.25rem;
+}
+
+.welcome-desc {
+    color: var(--text-muted);
+    font-size: 0.875rem;
 }
 </style>
 """
