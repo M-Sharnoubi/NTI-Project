@@ -286,5 +286,24 @@ div[data-testid="stChatInput"]:focus-within textarea {
     color: var(--text-muted);
     font-size: 0.875rem;
 }
+/* Add or update these rules in styles.py */
+
+/* Create bottom padding on the main chat container so messages don't get covered by the fixed bar */
+div[data-testid="stMainBlockContainer"] {
+    padding-bottom: 120px !important;
+}
+
+/* Pin the chat input container to the bottom of the viewport */
+div[data-testid="stChatInput"] {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: 100% !important;
+    max-width: 900px !important; /* Matches your block-container width */
+    z-index: 999 !important;
+    background-color: var(--bg-surface) !important;
+    padding: 10px 0 !important;
+}
 </style>
 """
