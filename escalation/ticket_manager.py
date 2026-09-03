@@ -10,6 +10,7 @@ def create_support_ticket(
     user_message: str,
     intent: str = "complaint",
     order_id: Optional[str] = None,
+    priority: str = "medium",
     conversation_history_text: Optional[str] = None
 ) -> Dict[str, Any]:
     """
@@ -33,6 +34,7 @@ def create_support_ticket(
         "user_message": user_message,
         "intent": intent,
         "order_id": order_id,
+        "priority": priority,
         "summary": summary_text,
         "status": "OPEN",
         "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
