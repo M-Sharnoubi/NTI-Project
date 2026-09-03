@@ -1,12 +1,12 @@
 """
-Dynamic Router Orchestrator.
+Dynamic Router Orchestrator with Sentiment-Aware Escalation.
 
 This module acts as the central execution hub for the customer support system.
-It inspects NLP intent classifications and dynamically routes queries to:
+It inspects NLP intent and sentiment classifications and dynamically routes queries to:
   1. Simple Route: Direct static responses for greetings, thanks, and goodbyes.
   2. RAG Route: Knowledge base retrieval via vector search (rag_agent_module_2).
   3. Agent Route: Tool-assisted actions like order tracking and cancellations.
-  4. Escalation Route: Ticket generation for complaints and unresolved queries.
+  4. Escalation Route: Ticket generation for complaints, system errors, or angry sentiment.
 """
 
 import logging
@@ -36,16 +36,16 @@ def route_request(
     chat_history: Optional[List[Dict[str, str]]] = None
 ) -> Dict[str, Any]:
     """
-    Orchestrates user requests across simple, RAG, agent, and escalation routes.
+    Orchestrates user requests across simple, RAG, agent, and escalation routes with sentiment awareness.
 
     Args:
         user_input (str): Raw customer text input.
-        nlp_output (Dict[str, Any], optional): Classified intent and entities. Auto-invokes NLP if None.
+        nlp_output (Dict[str, Any], optional): Classified intent, sentiment, and entities.
         thread_id (str): Unique session identifier for conversation persistence.
         chat_history (List[Dict[str, str]], optional): List of prior chat turns.
 
     Returns:
-        Dict[str, Any]: Unified payload containing the final answer, route used, status, and ticket details.
+        Dict[str, Any]: Unified payload containing final answer, route used, status, and ticket info.
     """
     # Automatically execute Person 1's NLP module if nlp_output is not provided
     if nlp_output is None:
@@ -53,9 +53,10 @@ def route_request(
             nlp_output = analyze_customer_message(user_input)
         except Exception as err:
             logging.error(f"NLP execution failed in inference.py: {err}")
-            nlp_output = {"intent": "general_inquiry", "entities": {}}
+            nlp_output = {"intent": "general_inquiry", "sentiment": "neutral", "entities": {}}
 
     intent = nlp_output.get("intent", "general_inquiry")
+    sentiment = nlp_output.get("sentiment", "neutral")  # Extract sentiment with default fallback
     entities = nlp_output.get("entities", {})
     order_id = entities.get("order_id") if isinstance(entities, dict) else getattr(entities, "order_id", None)
 
@@ -81,6 +82,24 @@ def route_request(
 
             return payload
 
+        # Route 4 Special Case: Escalation triggered by explicit complaint OR high anger
+        elif intent == "complaint" or str(sentiment).lower().strip() in ["angry", "frustrated"]:
+            payload["route_used"] = "ESCALATION_ROUTE"
+            payload["status"] = "UNSOLVED"
+
+            ticket_res = create_support_ticket(
+                user_message=user_input,
+                intent=intent,
+                sentiment=sentiment,
+                order_id=order_id
+            )
+            payload["ticket_info"] = ticket_res.get("ticket")
+            payload["final_answer"] = (
+                f"نأسف للإزعاج. {ticket_res.get('message')} "
+                "تم إعطاء تذكرتك أولوية عالية وسيتواصل معك موظف الخدمة فوراً."
+            )
+            return payload
+
         # Route 2: RAG Route (Knowledge Base Lookup)
         elif intent in ["policy_inquiry", "general_inquiry"]:
             payload["route_used"] = "RAG_ROUTE"
@@ -90,23 +109,6 @@ def route_request(
         elif intent in ["track_order", "cancel_order"]:
             payload["route_used"] = "AGENT_ROUTE"
             payload["final_answer"] = run_agent_pipeline(user_query=user_input, thread_id=thread_id)
-
-        # Route 4: Escalation Route (Direct human agent escalation)
-        elif intent == "complaint":
-            payload["route_used"] = "ESCALATION_ROUTE"
-            payload["status"] = "UNSOLVED"
-
-            ticket_res = create_support_ticket(
-                user_message=user_input,
-                intent=intent,
-                order_id=order_id
-            )
-            payload["ticket_info"] = ticket_res.get("ticket")
-            payload["final_answer"] = (
-                f"نأسف للإزعاج. {ticket_res.get('message')} "
-                "سيقوم أحد ممثلي خدمة العملاء بالتواصل معك في أقرب وقت."
-            )
-            return payload
 
         # Fallback Route
         else:
@@ -127,6 +129,7 @@ def route_request(
             ticket_res = create_support_ticket(
                 user_message=user_input,
                 intent=intent,
+                sentiment=sentiment,
                 order_id=order_id,
                 conversation_history_text=history_str
             )
@@ -141,6 +144,7 @@ def route_request(
         ticket_res = create_support_ticket(
             user_message=user_input,
             intent="system_error",
+            sentiment=sentiment,
             order_id=order_id
         )
         payload["ticket_info"] = ticket_res.get("ticket")
@@ -152,19 +156,19 @@ def route_request(
 # Local execution test block
 if __name__ == "__main__":
     print("=" * 60)
-    print("Testing Integrated Dynamic Router Module")
+    print("Testing Integrated Dynamic Router Module with Sentiment Analysis")
     print("=" * 60)
 
     # Test Case 1: Simple Greeting
-    res_1 = route_request("السلام عليكم", nlp_output={"intent": "greeting"})
+    res_1 = route_request("السلام عليكم", nlp_output={"intent": "greeting", "sentiment": "neutral"})
     print("\n[Test 1 Output - Simple Route]:")
     print(res_1)
 
-    # Test Case 2: Agent Order Tracking
+    # Test Case 2: Angry Sentiment Escalation
     res_2 = route_request(
-        "عايز أعرف شحنة 1001 فين؟", 
-        nlp_output={"intent": "track_order", "entities": {"order_id": "1001"}},
-        thread_id="test_session_1"
+        "خدمة سيئة جداً والأوردر مقتنعش للنهاردة!",
+        nlp_output={"intent": "complaint", "sentiment": "angry", "entities": {"order_id": "1001"}},
+        thread_id="test_session_2"
     )
-    print("\n[Test 2 Output - Agent Route]:")
+    print("\n[Test 2 Output - High Priority Escalation]:")
     print(res_2)
