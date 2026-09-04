@@ -15,7 +15,6 @@ chromadb
 sentence-transformers
 transformers
 torch
-torchvision
 
 pypdf
 rapidfuzz
