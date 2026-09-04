@@ -16,5 +16,6 @@ sentence-transformers
 transformers
 torch
 torchvision
+rapidfuzz
 
 pypdf
